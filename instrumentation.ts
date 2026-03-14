@@ -17,10 +17,17 @@ export async function register() {
       console.log('[DB] Database found, applying pending migrations...')
     }
 
-    const prismaBin = path.join(process.cwd(), 'node_modules', '.bin', 'prisma')
+    // Use prisma CLI entry point directly — avoids npx and .bin symlink issues
+    const prismaCli = path.join(
+      process.cwd(),
+      'node_modules',
+      'prisma',
+      'build',
+      'index.js'
+    )
 
     try {
-      execSync(`"${prismaBin}" migrate deploy`, {
+      execSync(`node "${prismaCli}" migrate deploy`, {
         stdio: 'inherit',
         cwd: process.cwd(),
         env: process.env,

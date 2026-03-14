@@ -82,10 +82,15 @@ async function main() {
       isActive: true,
     },
   ]
-  for (const ev of events) {
-    await prisma.event.create({ data: ev })
+  const eventCount = await prisma.event.count()
+  if (eventCount === 0) {
+    for (const ev of events) {
+      await prisma.event.create({ data: ev })
+    }
+    console.log('✅ Sample events created')
+  } else {
+    console.log('⏭️  Events already exist, skipping.')
   }
-  console.log('✅ Sample events created')
 
   const announcements = [
     {
@@ -104,22 +109,32 @@ async function main() {
       isActive: true,
     },
   ]
-  for (const ann of announcements) {
-    await prisma.announcement.create({ data: ann })
+  const announcementCount = await prisma.announcement.count()
+  if (announcementCount === 0) {
+    for (const ann of announcements) {
+      await prisma.announcement.create({ data: ann })
+    }
+    console.log('✅ Sample announcements created')
+  } else {
+    console.log('⏭️  Announcements already exist, skipping.')
   }
-  console.log('✅ Sample announcements created')
 
-  await prisma.media.create({
-    data: {
-      type: 'YOUTUBE',
-      url: 'https://www.youtube.com/watch?v=jfKfPfyJRdk',
-      title: 'Lo-Fi Music for Studying',
-      displayOrder: 0,
-      duration: 30,
-      isActive: true,
-    },
-  })
-  console.log('✅ Sample media created')
+  const mediaCount = await prisma.media.count()
+  if (mediaCount === 0) {
+    await prisma.media.create({
+      data: {
+        type: 'YOUTUBE',
+        url: 'https://www.youtube.com/watch?v=jfKfPfyJRdk',
+        title: 'Lo-Fi Music for Studying',
+        displayOrder: 0,
+        duration: 30,
+        isActive: true,
+      },
+    })
+    console.log('✅ Sample media created')
+  } else {
+    console.log('⏭️  Media already exists, skipping.')
+  }
 }
 
 main()

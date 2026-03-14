@@ -39,9 +39,15 @@ export async function GET() {
 }
 
 export async function POST() {
-  const prismaBin = path.join(process.cwd(), 'node_modules', '.bin', 'prisma')
+  const prismaCli = path.join(
+    process.cwd(),
+    'node_modules',
+    'prisma',
+    'build',
+    'index.js'
+  )
   try {
-    const output = execSync(`"${prismaBin}" migrate deploy`, {
+    const output = execSync(`node "${prismaCli}" migrate deploy`, {
       cwd: process.cwd(),
       env: process.env,
       encoding: 'utf8',
