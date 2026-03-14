@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && prisma migrate deploy && next build",
-    "start": "next start",
+    "build": "prisma generate && prisma migrate deploy && prisma db seed && next build",
+    "start": "node scripts/setup-uploads.cjs && next start",
     "lint": "eslint"
   },
   "dependencies": {
@@ -21,7 +21,7 @@
     "zod": "^4.3.6"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "node prisma/seed.cjs"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
