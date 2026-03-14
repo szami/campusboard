@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && prisma migrate deploy && prisma db seed && next build",
-    "start": "node scripts/setup-uploads.cjs && next start",
+    "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
