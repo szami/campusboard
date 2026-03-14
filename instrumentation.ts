@@ -17,8 +17,10 @@ export async function register() {
       console.log('[DB] Database found, applying pending migrations...')
     }
 
+    const prismaBin = path.join(process.cwd(), 'node_modules', '.bin', 'prisma')
+
     try {
-      execSync('npx prisma migrate deploy', {
+      execSync(`"${prismaBin}" migrate deploy`, {
         stdio: 'inherit',
         cwd: process.cwd(),
         env: process.env,

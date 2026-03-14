@@ -39,8 +39,9 @@ export async function GET() {
 }
 
 export async function POST() {
+  const prismaBin = path.join(process.cwd(), 'node_modules', '.bin', 'prisma')
   try {
-    const output = execSync('npx prisma migrate deploy', {
+    const output = execSync(`"${prismaBin}" migrate deploy`, {
       cwd: process.cwd(),
       env: process.env,
       encoding: 'utf8',
