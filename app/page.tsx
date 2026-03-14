@@ -5,7 +5,6 @@ import Marquee from '@/components/display/Marquee'
 import MediaSlideshow from '@/components/display/MediaSlideshow'
 import Weather from '@/components/display/Weather'
 import { formatTimeInTz } from '@/lib/timezone'
-import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
 interface Event {
@@ -143,14 +142,14 @@ export default function DisplayPage() {
         {/* Logo + Campus Name */}
         <div className='flex items-center gap-4'>
           {s.logo_main ? (
-            <div className='relative h-12 w-12'>
-              <Image
-                src={s.logo_main}
-                alt='Logo'
-                fill
-                style={{ objectFit: 'contain', objectPosition: 'center' }}
-              />
-            </div>
+            <img
+              src={s.logo_main}
+              alt='Logo'
+              className='h-12 w-12 object-contain'
+              onError={(e) => {
+                ;(e.target as HTMLImageElement).style.display = 'none'
+              }}
+            />
           ) : (
             <div
               className='h-12 w-12 rounded-full flex items-center justify-center text-2xl font-bold text-white'
@@ -178,15 +177,15 @@ export default function DisplayPage() {
         {smallLogos.length > 0 && (
           <div className='flex items-center gap-4'>
             {smallLogos.map((logo, i) => (
-              <div className='relative h-10 w-10' key={i}>
-                <Image
-                  src={logo}
-                  alt={`Logo ${i + 1}`}
-                  fill
-                  style={{ objectFit: 'contain', objectPosition: 'center' }}
-                  className='opacity-90'
-                />
-              </div>
+              <img
+                key={i}
+                src={logo}
+                alt={`Logo ${i + 1}`}
+                className='h-10 w-10 object-contain opacity-90'
+                onError={(e) => {
+                  ;(e.target as HTMLImageElement).style.display = 'none'
+                }}
+              />
             ))}
           </div>
         )}
