@@ -1,26 +1,194 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #03045e;
+  --foreground: #ffffff;
+  --ocean-950: #03045e;
+  --ocean-900: #023e8a;
+  --ocean-800: #0077b6;
+  --ocean-700: #0096c7;
+  --ocean-600: #00b4d8;
+  --ocean-400: #90e0ef;
+  --ocean-300: #ade8f4;
+  --crimson-900: #6b0000;
+  --crimson-800: #8b0000;
+  --crimson-700: #a00000;
+  --crimson-600: #c1121f;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-ocean-950: #03045e;
+  --color-ocean-900: #023e8a;
+  --color-ocean-800: #0077b6;
+  --color-ocean-700: #0096c7;
+  --color-ocean-600: #00b4d8;
+  --color-ocean-500: #48cae4;
+  --color-ocean-400: #90e0ef;
+  --color-ocean-300: #ade8f4;
+  --color-ocean-200: #caf0f8;
+  --color-crimson-950: #3d0000;
+  --color-crimson-900: #6b0000;
+  --color-crimson-800: #8b0000;
+  --color-crimson-700: #a00000;
+  --color-crimson-600: #c1121f;
+  --color-crimson-500: #e63946;
+  --color-crimson-300: #ff6b6b;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Marquee animation */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  display: inline-block;
+  animation: marquee-scroll linear infinite;
+}
+
+/* Hide scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* TV display body - fullscreen mode */
+.display-mode {
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: hidden;
+}
+
+/* ── Admin dark mode overrides ───────────────────────────────── */
+.admin-dark input,
+.admin-dark textarea,
+.admin-dark select {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-color: #475569 !important;
+}
+.admin-dark input::placeholder,
+.admin-dark textarea::placeholder {
+  color: #64748b !important;
+}
+.admin-dark .bg-white {
+  background-color: #1e293b !important;
+}
+.admin-dark .bg-gray-50 {
+  background-color: #0f172a !important;
+}
+.admin-dark .border-gray-100,
+.admin-dark .border-gray-200 {
+  border-color: #334155 !important;
+}
+.admin-dark .divide-gray-50 > * + * {
+  border-color: #334155 !important;
+}
+.admin-dark .text-gray-800 {
+  color: #f1f5f9 !important;
+}
+.admin-dark .text-gray-700 {
+  color: #e2e8f0 !important;
+}
+.admin-dark .text-gray-600 {
+  color: #cbd5e1 !important;
+}
+.admin-dark .text-gray-500 {
+  color: #94a3b8 !important;
+}
+.admin-dark .text-gray-400 {
+  color: #64748b !important;
+}
+/* Status badges */
+.admin-dark .bg-green-100 {
+  background-color: rgba(20, 83, 45, 0.5) !important;
+}
+.admin-dark .text-green-700 {
+  color: #86efac !important;
+}
+.admin-dark .bg-green-50 {
+  background-color: rgba(20, 83, 45, 0.35) !important;
+}
+.admin-dark .text-green-800 {
+  color: #86efac !important;
+}
+.admin-dark .bg-red-50 {
+  background-color: rgba(127, 29, 29, 0.4) !important;
+}
+.admin-dark .text-red-700 {
+  color: #fca5a5 !important;
+}
+.admin-dark .bg-blue-50 {
+  background-color: rgba(30, 58, 95, 0.45) !important;
+}
+.admin-dark .text-blue-600,
+.admin-dark .text-blue-700 {
+  color: #93c5fd !important;
+}
+.admin-dark .border-blue-200 {
+  border-color: #1e3a5f !important;
+}
+.admin-dark .border-green-200 {
+  border-color: #14532d !important;
+}
+.admin-dark .border-red-200 {
+  border-color: #7f1d1d !important;
+}
+/* Table rows */
+.admin-dark tr {
+  border-color: #334155 !important;
+}
+.admin-dark thead th {
+  background-color: rgba(30, 58, 138, 0.25) !important;
+}
+.admin-dark .hover\:bg-gray-50:hover {
+  background-color: #263348 !important;
+}
+/* Rounded card shadows */
+.admin-dark .shadow-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+}
+/* ── end admin dark mode ──────────────────────────────────────── */
+
+/* Glassmorphism card */
+.glass-card {
+  background: rgba(0, 119, 182, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 180, 216, 0.2);
+}
+
+/* Pulse ring for live indicator */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(74, 222, 128, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+  }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
 }

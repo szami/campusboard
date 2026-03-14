@@ -1,65 +1,267 @@
-import Image from "next/image";
+'use client'
+import Clock from '@/components/display/Clock'
+import EventList from '@/components/display/EventList'
+import Marquee from '@/components/display/Marquee'
+import MediaSlideshow from '@/components/display/MediaSlideshow'
+import Weather from '@/components/display/Weather'
+import { formatTimeInTz } from '@/lib/timezone'
+import Image from 'next/image'
+import { useEffect, useState } from 'react'
 
-export default function Home() {
+interface Event {
+  id: string
+  title: string
+  description?: string | null
+  startTime: string
+  endTime?: string | null
+  floor: number
+  room?: string | null
+  organizer?: string | null
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+interface Announcement {
+  id: string
+  text: string
+  isActive: boolean
+  priority: number
+  createdAt: string
+  updatedAt: string
+}
+
+interface Media {
+  id: string
+  type: string
+  url: string
+  title?: string | null
+  displayOrder: number
+  duration: number
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+interface DisplayData {
+  events: Event[]
+  announcements: Announcement[]
+  media: Media[]
+  settings: Record<string, string>
+}
+
+const DEFAULT_SETTINGS = {
+  campus_name: 'Universitas Kampus',
+  logo_main: '',
+  logo_1: '',
+  logo_2: '',
+  logo_3: '',
+  logo_4: '',
+  weather_city: 'Jakarta',
+  default_media_url: '',
+  bg_music_url: '',
+  marquee_speed: '40',
+  slide_duration: '10',
+  timezone: 'Asia/Makassar',
+}
+
+export default function DisplayPage() {
+  const [data, setData] = useState<DisplayData>({
+    events: [],
+    announcements: [],
+    media: [],
+    settings: DEFAULT_SETTINGS,
+  })
+  const [loading, setLoading] = useState(true)
+
+  const fetchData = async () => {
+    try {
+      const res = await fetch('/api/display', { cache: 'no-store' })
+      if (res.ok) {
+        const json = (await res.json()) as DisplayData
+        setData(json)
+      }
+    } catch (err: unknown) {
+      console.error('Failed to fetch display data:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+    const interval = setInterval(fetchData, 60 * 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const s = { ...DEFAULT_SETTINGS, ...data.settings }
+  const announcementTexts = data.announcements.map((a) => a.text)
+  const eventMarqueeTexts = data.events.map(
+    (e) =>
+      `📅 ${formatTimeInTz(e.startTime, s.timezone)} — ${e.title}${e.room ? ` (${e.room}, Lantai ${e.floor})` : ''}`
+  )
+  const allMarqueeTexts = [...announcementTexts, ...eventMarqueeTexts]
+  const smallLogos = [s.logo_1, s.logo_2, s.logo_3, s.logo_4].filter(Boolean)
+
+  if (loading) {
+    return (
+      <div
+        className='w-screen h-screen flex items-center justify-center'
+        style={{ background: '#03045e' }}
+      >
+        <div className='text-center'>
+          <div
+            className='w-16 h-16 border-4 border-ocean-600 border-t-transparent rounded-full animate-spin mx-auto mb-4'
+            style={{ borderColor: '#00b4d8', borderTopColor: 'transparent' }}
+          />
+          <div className='text-lg' style={{ color: '#ade8f4' }}>
+            Memuat...
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div
+      className='w-screen h-screen flex flex-col overflow-hidden'
+      style={{
+        background:
+          'linear-gradient(135deg, #03045e 0%, #023e8a 50%, #03045e 100%)',
+        userSelect: 'none',
+      }}
+    >
+      {/* ─── HEADER ─── */}
+      <header
+        className='flex items-center justify-between px-6 py-3 shrink-0'
+        style={{
+          background:
+            'linear-gradient(90deg, rgba(2,62,138,0.98) 0%, rgba(0,119,182,0.6) 50%, rgba(2,62,138,0.98) 100%)',
+          borderBottom: '1px solid rgba(0,180,216,0.25)',
+        }}
+      >
+        {/* Logo + Campus Name */}
+        <div className='flex items-center gap-4'>
+          {s.logo_main ? (
+            <div className='relative h-12 w-12'>
+              <Image
+                src={s.logo_main}
+                alt='Logo'
+                fill
+                style={{ objectFit: 'contain', objectPosition: 'center' }}
+              />
+            </div>
+          ) : (
+            <div
+              className='h-12 w-12 rounded-full flex items-center justify-center text-2xl font-bold text-white'
+              style={{
+                background: 'linear-gradient(135deg, #0077b6, #00b4d8)',
+              }}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              🎓
+            </div>
+          )}
+          <div>
+            <h1 className='text-xl font-bold text-white tracking-wide'>
+              {s.campus_name}
+            </h1>
+            <div
+              className='text-xs uppercase tracking-widest'
+              style={{ color: '#90e0ef' }}
             >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              Campus Information Board
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        {/* 4 small logos (center) */}
+        {smallLogos.length > 0 && (
+          <div className='flex items-center gap-4'>
+            {smallLogos.map((logo, i) => (
+              <div className='relative h-10 w-10' key={i}>
+                <Image
+                  src={logo}
+                  alt={`Logo ${i + 1}`}
+                  fill
+                  style={{ objectFit: 'contain', objectPosition: 'center' }}
+                  className='opacity-90'
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Clock + Weather */}
+        <div className='flex items-center gap-6'>
+          <Weather />
+          <Clock timezone={s.timezone} />
+        </div>
+      </header>
+
+      {/* ─── MAIN CONTENT ─── */}
+      <div className='flex flex-1 gap-4 p-4 min-h-0'>
+        {/* LEFT: Event Schedule (fixed width) */}
+        <div
+          className='flex flex-col gap-3 overflow-hidden'
+          style={{ width: '320px', flexShrink: 0 }}
+        >
+          <div className='flex items-center gap-2 shrink-0'>
+            <div
+              className='h-5 w-1 rounded'
+              style={{ background: '#c1121f' }}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <h2
+              className='text-xs font-bold uppercase tracking-wider'
+              style={{ color: '#90e0ef' }}
+            >
+              Jadwal Kegiatan Hari Ini
+            </h2>
+          </div>
+          <div className='flex-1 overflow-hidden'>
+            <EventList events={data.events} timezone={s.timezone} />
+          </div>
         </div>
-      </main>
+
+        {/* DIVIDER */}
+        <div
+          className='w-px shrink-0 self-stretch'
+          style={{ background: 'rgba(0,180,216,0.2)' }}
+        />
+
+        {/* RIGHT: Media Slideshow */}
+        <div className='flex-1 min-w-0 h-full'>
+          <MediaSlideshow
+            items={data.media}
+            defaultVideoUrl={s.default_media_url}
+            bgMusicUrl={s.bg_music_url}
+          />
+        </div>
+      </div>
+
+      {/* ─── MARQUEE BAR ─── */}
+      {allMarqueeTexts.length > 0 ? (
+        <Marquee texts={allMarqueeTexts} speed={parseInt(s.marquee_speed)} />
+      ) : (
+        <div
+          className='shrink-0 py-2 text-center text-xs'
+          style={{
+            color: '#90e0ef',
+            background: 'rgba(2,62,138,0.8)',
+            borderTop: '1px solid rgba(0,180,216,0.2)',
+          }}
+        >
+          {s.campus_name} · Campus Information Board
+        </div>
+      )}
+
+      {/* ─── BOTTOM ACCENT LINE ─── */}
+      <div
+        className='h-1 shrink-0 w-full'
+        style={{
+          background:
+            'linear-gradient(90deg, #03045e, #c1121f 25%, #0077b6 50%, #c1121f 75%, #03045e)',
+        }}
+      />
     </div>
-  );
+  )
 }
