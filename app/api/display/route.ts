@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 // GET /api/display - single endpoint that returns everything for the display screen
 export async function GET(request: NextRequest) {
   try {

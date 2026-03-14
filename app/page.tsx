@@ -72,6 +72,7 @@ export default function DisplayPage() {
     settings: DEFAULT_SETTINGS,
   })
   const [loading, setLoading] = useState(true)
+  const [failedLogos, setFailedLogos] = useState<Set<string>>(new Set())
 
   const fetchData = async () => {
     try {
@@ -141,14 +142,14 @@ export default function DisplayPage() {
       >
         {/* Logo + Campus Name */}
         <div className='flex items-center gap-4'>
-          {s.logo_main ? (
+          {s.logo_main && !failedLogos.has('logo_main') ? (
             <img
               src={s.logo_main}
               alt='Logo'
               className='h-12 w-12 object-contain'
-              onError={(e) => {
-                ;(e.target as HTMLImageElement).style.display = 'none'
-              }}
+              onError={() =>
+                setFailedLogos((prev) => new Set([...prev, 'logo_main']))
+              }
             />
           ) : (
             <div
@@ -182,9 +183,9 @@ export default function DisplayPage() {
                 src={logo}
                 alt={`Logo ${i + 1}`}
                 className='h-10 w-10 object-contain opacity-90'
-                onError={(e) => {
-                  ;(e.target as HTMLImageElement).style.display = 'none'
-                }}
+                onError={(e) =>
+                  ((e.target as HTMLImageElement).style.display = 'none')
+                }
               />
             ))}
           </div>
